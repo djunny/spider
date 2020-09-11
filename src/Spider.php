@@ -66,6 +66,7 @@ class spider
         $this->url     = $url;
         $this->header  = array_merge($this->header, $header);
         $this->timeout = $timeout ?: 10;
+        return $this;
     }
 
     /**
@@ -178,16 +179,16 @@ class spider
             '&ldquo;' => '“',
             //"\xA0" => ' ',
         ]);
-        $html = preg_replace('/^[\s\t]+/is', ' ', $html);
-        $html = preg_replace('#<?xml[\s\S]*?>#is', '', $html);
-        $html = preg_replace('#<!--[\s\S]*?-->#is', '', $html);
-        $html = preg_replace('#<!doc[\s\S]*?>#is', '', $html);
-        $html = preg_replace('#<(head|script|iframe|frame|noscript|noframes|option|style)[\s\S]*?</\1>#is', '', $html);
-        $html = preg_replace('#<(br|hr|li|ol|ul|dl|h\d|dd|dt|center|form|table|tr|marquee|div|pre|p|blockquote).*?>#is', "\n", $html);
+        $html = pregReplace('/^[\s\t]+/is', ' ', $html);
+        $html = pregReplace('#<?xml[\s\S]*?>#is', '', $html);
+        $html = pregReplace('#<!--[\s\S]*?-->#is', '', $html);
+        $html = pregReplace('#<!doc[\s\S]*?>#is', '', $html);
+        $html = pregReplace('#<(head|script|iframe|frame|noscript|noframes|option|style)[\s\S]*?</\1>#is', '', $html);
+        $html = pregReplace('#<(br|hr|li|ol|ul|dl|h\d|dd|dt|center|form|table|tr|marquee|div|pre|p|blockquote).*?>#is', "\n", $html);
         $html = static::strip_tags($html);
         // decode entities
         $html = html_entity_decode($html, ENT_COMPAT, 'UTF-8');
-        $html = preg_replace('#([\r\n]\s+[\r\n])+#is', "\n", $html);
+        $html = pregReplace('#([\r\n]\s+[\r\n])+#is', "\n", $html);
 
         $html = str_replace(["\r", "\n\n"], "\n", $html);
         while (strpos($html, "\n\n") !== FALSE) {
@@ -242,11 +243,11 @@ class spider
                 $line_tags  = substr($line_tags, 0, -1);
                 $searches[] = '#<(?!(?:' . $line_tags . ')|\/(?:' . $line_tags . ')\b)[^>]*?>#si';
             }
-            return preg_replace($searches, '', $text);
+            return pregReplace($searches, '', $text);
         } else {
             $searches[] = '#<(' . implode('|', $block_set) . ')\b[\s\S]*?</\1>#is';
             $searches[] = '#<\/?[^>]*?>#si';
-            return preg_replace($searches, '', $text);
+            return pregReplace($searches, '', $text);
         }
     }
 
@@ -273,10 +274,10 @@ class spider
     /**
      * mask match string:
      *
-     * spider::mask_match('123abc123', '123(*)123') = abc
-     * spider::mask_match('abc123', '(*)123') = abc
-     * spider::mask_match('123abcabc', '(*)abc') = 123
-     * spider::mask_match('123abcdef', '(*)abc', true) = 123abc
+     * spider::maskMatch('123abc123', '123(*)123') = abc
+     * spider::maskMatch('abc123', '(*)123') = abc
+     * spider::maskMatch('123abcabc', '(*)abc') = 123
+     * spider::maskMatch('123abcdef', '(*)abc', true) = 123abc
      *
      * @param            $html
      * @param            $pattern
@@ -325,12 +326,12 @@ class spider
      * replace by array replace_from  => replace_to (support reg & str & mask)
      *
      *  example :
-     * spider::reg_replace('abcdefg', 'e(*)') = abcd
-     * spider::reg_replace('abcdefg', array('#e.+$#is'=> 'hij')) = abcdhij
-     * spider::reg_replace('abcd123', array('#\d+#s'=> '')) = abcd
-     * spider::reg_replace('abcd123', array('cd'=> 'dc')) = abdc123
+     * spider::regReplace('abcdefg', 'e(*)') = abcd
+     * spider::regReplace('abcdefg', array('#e.+$#is'=> 'hij')) = abcdhij
+     * spider::regReplace('abcd123', array('#\d+#s'=> '')) = abcd
+     * spider::regReplace('abcd123', array('cd'=> 'dc')) = abdc123
      * //replace multi pattern
-     * spider::reg_replace('abcd123', array(
+     * spider::regReplace('abcd123', array(
      * 'cd'=> 'dc',
      * '1(*)'=> '321',
      * '#\d+#s'=> '111',
@@ -357,7 +358,7 @@ class spider
                 }
             } elseif (preg_match('/^([\#\/\|\!\@]).+\\1([ismSMI]+)?$/is', $search)) {
                 //regexp replace
-                $html = preg_replace($search, $replace, $html);
+                $html = pregReplace($search, $replace, $html);
             } else {
                 //str replace
                 $html = str_replace($search, $replace, $html);
@@ -449,7 +450,7 @@ class spider
                             break;
                         }
                     } else {
-                        // match field by mask_match
+                        // match field by maskMatch
 
                         $value = static::maskMatch($matchHtml, $pattern);
 
@@ -853,7 +854,7 @@ class spider
                     $defHeaders['host'] . ":" . $port . ":" . $host,
                 ]);
                 //replace host
-                $new_url = preg_replace('#' . preg_quote($urlInfo['host']) . '#is', $defHeaders['host'], $url, 1);
+                $new_url = pregReplace('#' . preg_quote($urlInfo['host']) . '#is', $defHeaders['host'], $url, 1);
                 curl_setopt($ch, CURLOPT_URL, $new_url);
             }
             // ssl cert
