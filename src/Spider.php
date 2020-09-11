@@ -723,7 +723,7 @@ class Spider
      * @return $this
      * @throws Exception
      */
-    public function GET($timeout = -1) {
+    public function get($timeout = -1) {
         return $this->fetch($this->url, '', $this->header, $timeout > 0 ? $timeout : $this->timeout);
     }
 
@@ -739,7 +739,7 @@ class Spider
      * @return $this
      * @throws Exception
      */
-    public function POST($post, $timeout = -1) {
+    public function post($post, $timeout = -1) {
         return $this->fetch($this->url, $post, $this->header, $timeout > 0 ? $timeout : $this->timeout);
     }
 
@@ -755,7 +755,7 @@ class Spider
      * @return $this
      * @throws Exception
      */
-    public function PUT($post, $timeout = -1) {
+    public function put($post, $timeout = -1) {
         return $this->fetch($this->url, $post, array_merge($this->header, ['method' => 'PUT']), $timeout);
     }
 
@@ -771,8 +771,24 @@ class Spider
      * @return $this
      * @throws Exception
      */
-    public function DELETE($post, $timeout = -1) {
+    public function delete($post, $timeout = -1) {
         return $this->fetch($this->url, $post, array_merge($this->header, ['method' => 'DELETE']), $timeout);
+    }
+
+    /**
+     * HTTP PATCH
+     *
+     * @param       $url
+     * @param       $post
+     * @param array $headers
+     * @param int   $timeout
+     * @param int   $deep
+     *
+     * @return $this
+     * @throws Exception
+     */
+    public function patch($post, $timeout = -1) {
+        return $this->fetch($this->url, $post, array_merge($this->header, ['method' => 'PATCH']), $timeout);
     }
 
     /**
@@ -787,7 +803,7 @@ class Spider
      * @return $this
      * @throws Exception
      */
-    public function HEAD($timeout = -1) {
+    public function head($timeout = -1) {
         return $this->fetch($this->url, '', array_merge($this->header, ['method' => 'HEAD']), $timeout);
     }
 
