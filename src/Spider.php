@@ -51,16 +51,16 @@ class spider
     /**
      * spider constructor.
      *
-     * @param       $url
-     * @param array $header
+     * @param string $url
+     * @param array  $header
      */
-    public function __construct($url, $header = [], $timeout = 0) {
+    public function __construct($url = '', $header = [], $timeout = 0) {
         $this->init($url, $header, $timeout);
     }
 
     /**
-     * @param       $url
-     * @param array $header
+     * @param string $url
+     * @param array  $header
      */
     public function init($url, $header = [], $timeout = 0) {
         $this->url     = $url;
