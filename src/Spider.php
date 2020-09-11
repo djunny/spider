@@ -29,7 +29,7 @@ class Spider
      *
      * @var string
      */
-    private $responseBody = '';
+    private $body = '';
 
     /**
      * last curl error
@@ -135,15 +135,15 @@ class Spider
     /**
      * @return string
      */
-    public function getResponseBody() {
-        return $this->responseBody;
+    public function getBody() {
+        return $this->body;
     }
 
     /**
-     * @param string $responseBody
+     * @param string $body
      */
-    public function setResponseBody($responseBody) {
-        $this->responseBody = $responseBody;
+    public function setBody($body) {
+        $this->body = $body;
     }
 
     /**
@@ -1065,7 +1065,7 @@ class Spider
             }
         }
         $body = static::covertHtmlCharset($data, $charset);
-        $this->setResponseBody($body);
+        $this->setBody($body);
         return $this;
 
     }
@@ -1173,8 +1173,8 @@ class Spider
      *
      * @return mixed
      */
-    public function getResponseJson($type = 'array') {
-        return json_decode($this->responseBody, $type == 'array' ? 1 : 0);
+    public function getJson($type = 'array') {
+        return json_decode($this->body, $type == 'array' ? 1 : 0);
     }
 
     /**
@@ -1184,9 +1184,9 @@ class Spider
      *
      * @return mixed
      */
-    public function getResponseXml($type = 'array') {
+    public function getXml($type = 'array') {
         libxml_disable_entity_loader(TRUE);
-        $xmlData = simplexml_load_string($this->responseBody, 'SimpleXMLElement', LIBXML_NOCDATA);
+        $xmlData = simplexml_load_string($this->body, 'SimpleXMLElement', LIBXML_NOCDATA);
         return json_decode(json_encode($xmlData), $type == 'array' ? 1 : 0);
     }
 }

@@ -23,6 +23,6 @@ $spider = new spider('https://www.baidu.com/s?wd=爱情&pn=50&rn=50&tn=json', [
 $spider->GET();
 print_r($spider->getResponseCode());
 print_r($spider->getResponseHeader());
-print_r($spider->getResponseBody());
+print_r($spider->getBody());
 print_r($spider->getUrl());
-print_r($spider->getResponseJson());
+print_r($spider->getJson());

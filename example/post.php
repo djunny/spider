@@ -21,5 +21,5 @@ $spider->POST([
     'file2' => '@' . __FILE__ . ';text/plain'
 ]);
 
-print_r($spider->getResponseBody());
+print_r($spider->getBody());
 
