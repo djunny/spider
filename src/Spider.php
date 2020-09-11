@@ -2,7 +2,7 @@
 
 namespace ZV;
 
-class spider
+class Spider
 {
     /**
      * @var string last redirect url
