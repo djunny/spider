@@ -1041,7 +1041,7 @@ class Spider
         }
         if (!$data) {
             curl_close($ch);
-            return '';
+            return $this;
         }
         //for debug request header
         //@formatter:off
