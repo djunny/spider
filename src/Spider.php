@@ -856,7 +856,11 @@ class Spider
             }
         }
 
-        $ch = curl_init();
+        // reuse channel
+        static $ch;
+        if (is_null($ch)) {
+            $ch = curl_init();
+        }
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($ch, CURLOPT_HEADER, 1);
@@ -1039,10 +1043,6 @@ class Spider
         if (curl_errno($ch)) {
             $this->lastError = [curl_errno($ch), curl_error($ch)];
         }
-        if (!$data) {
-            curl_close($ch);
-            return $this;
-        }
         //for debug request header
         //@formatter:off
         //print_r($header_array);$info = curl_getinfo($ch, CURLINFO_HEADER_OUT );print_r($info);echo is_array($post) ? http_build_query($post) : $post;//exit;
@@ -1066,7 +1066,8 @@ class Spider
         }
         $body = static::covertHtmlCharset($data, $charset);
         $this->setBody($body);
-        curl_close($ch);
+        // reuse ch
+        curl_reset($ch);
         return $this;
 
     }
@@ -1092,7 +1093,9 @@ class Spider
                     $result['cookie'][] = $val;
                     break;
                 default:
-                    $result[$key] = trim($val);
+                    if ($key && $val) {
+                        $result[$key] = trim($val);
+                    }
                     break;
             }
         }
