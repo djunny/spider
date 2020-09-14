@@ -823,6 +823,8 @@ class Spider
         // reset variable
         $this->responseCode = -1;
         $this->lastError    = [];
+        $this->setBody('');
+
 
         $timeout = $timeout > 0 ? $timeout : $this->timeout;
         if (!is_array($headers)) {
@@ -856,7 +858,6 @@ class Spider
             }
         }
 
-        // reuse channel
         static $ch;
         if (is_null($ch)) {
             $ch = curl_init();
@@ -1041,7 +1042,7 @@ class Spider
         $data = curl_exec($ch);
 
         if (curl_errno($ch)) {
-            $this->lastError = [curl_errno($ch), curl_error($ch)];
+            $this->lastError = [curl_errno($ch), curl_strerror(curl_errno($ch))];
         }
         //for debug request header
         //@formatter:off
@@ -1066,6 +1067,7 @@ class Spider
         }
         $body = static::covertHtmlCharset($data, $charset);
         $this->setBody($body);
+
         // reuse ch
         curl_reset($ch);
         return $this;
