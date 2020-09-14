@@ -1066,6 +1066,7 @@ class Spider
         }
         $body = static::covertHtmlCharset($data, $charset);
         $this->setBody($body);
+        curl_close($ch);
         return $this;
 
     }
