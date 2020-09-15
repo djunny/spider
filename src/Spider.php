@@ -1069,9 +1069,15 @@ class Spider
         $this->setBody($body);
 
         // reuse ch
+        static $unsetValues = [
+            CURLOPT_HEADERFUNCTION   => NULL,
+            CURLOPT_WRITEFUNCTION    => NULL,
+            CURLOPT_READFUNCTION     => NULL,
+            CURLOPT_PROGRESSFUNCTION => NULL,
+        ];
+        curl_setopt_array($ch, $unsetValues);
         curl_reset($ch);
         return $this;
-
     }
 
     /**
