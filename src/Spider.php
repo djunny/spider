@@ -708,7 +708,7 @@ class Spider
         $url .= implode('/', $rst);
         $url = str_replace('\\', '/', $url);
         $url = str_ireplace('&amp;', '&', $url);
-        return $url . ($targetInfo['query'] ? '?' . $targetInfo['query'] : '');
+        return $url . (isset($targetInfo['query']) ? '?' . $targetInfo['query'] : '');
     }
 
 
@@ -999,6 +999,8 @@ class Spider
                 'host' => 'ip:port',
                 'auth' => 'BASIC:user:pass',
             );
+            'proxy' => 'http://1.1.1.1:80',
+            'proxy' => 'socks5://1.1.1.1:80',
         */
 
         if (isset($defHeaders['auth']) && $defHeaders['auth']) {
@@ -1007,20 +1009,29 @@ class Spider
         }
 
         if (isset($defHeaders['proxy']) && $defHeaders['proxy']) {
-            $proxy_type = strtoupper($defHeaders['proxy']['type']) == 'SOCKET' ? CURLPROXY_SOCKS5 : CURLPROXY_HTTP;
-            curl_setopt($ch, CURLOPT_PROXYTYPE, $proxy_type);
-            list($proxy_host, $proxy_port) = explode(':', $defHeaders['proxy']['host']);
-            $proxy_port = $proxy_port ?: $defHeaders['proxy']['port'];
-            curl_setopt($ch, CURLOPT_PROXY, $proxy_host);
-            curl_setopt($ch, CURLOPT_PROXYPORT, $proxy_port);
+            if (is_array($defHeaders['proxy'])) {
+                $proxy_type = strtoupper($defHeaders['proxy']['type']) == 'SOCKET' ? CURLPROXY_SOCKS5 : CURLPROXY_HTTP;
+                curl_setopt($ch, CURLOPT_PROXYTYPE, $proxy_type);
+                list($proxy_host, $proxy_port) = explode(':', $defHeaders['proxy']['host']);
+                $proxy_port = $proxy_port ?: $defHeaders['proxy']['port'];
+                curl_setopt($ch, CURLOPT_PROXY, $proxy_host);
+                curl_setopt($ch, CURLOPT_PROXYPORT, $proxy_port);
 
-            // proxy auth
-            if ($headers['proxy']['auth']) {
-                list($auth_type, $auth_user, $auth_pass) = explode(':', $headers['proxy']['auth']);
-                $auth_type = $auth_type == 'NTLM' ? CURLAUTH_NTLM : CURLAUTH_BASIC;
-                curl_setopt($ch, CURLOPT_PROXYAUTH, $auth_type);
-                $user = "" . $auth_user . ":" . $auth_pass . "";
-                curl_setopt($ch, CURLOPT_PROXYUSERPWD, $user);
+                // proxy auth
+                if ($headers['proxy']['auth']) {
+                    list($auth_type, $auth_user, $auth_pass) = explode(':', $headers['proxy']['auth']);
+                    $auth_type = $auth_type == 'NTLM' ? CURLAUTH_NTLM : CURLAUTH_BASIC;
+                    curl_setopt($ch, CURLOPT_PROXYAUTH, $auth_type);
+                    $user = "" . $auth_user . ":" . $auth_pass . "";
+                    curl_setopt($ch, CURLOPT_PROXYUSERPWD, $user);
+                }
+            } else {
+                // proxy by string
+                if (strpos($defHeaders['proxy'], '://') === FALSE) {
+                    // auto fill http proxy
+                    $defHeaders['proxy'] = 'http://' . $defHeaders['proxy'];
+                }
+                curl_setopt($ch, CURLOPT_PROXY, $defHeaders['proxy']);
             }
         }
         unset($defHeaders['proxy'], $defHeaders['auth']);
