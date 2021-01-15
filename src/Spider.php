@@ -2,8 +2,7 @@
 
 namespace ZV;
 
-class Spider
-{
+class Spider {
     /**
      * @var string last redirect url
      */
@@ -858,11 +857,7 @@ class Spider
             }
         }
 
-        static $ch;
-        if (is_null($ch)) {
-            $ch = curl_init();
-        }
-        curl_setopt($ch, CURLOPT_URL, $url);
+        $ch = curl_init($url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($ch, CURLOPT_HEADER, 1);
         curl_setopt($ch, CURLOPT_TIMEOUT, $timeout);
